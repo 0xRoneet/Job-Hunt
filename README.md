@@ -1,7 +1,6 @@
 # JobHunt
 
 Welcome to JobHunt, your ultimate platform for career growth and job opportunities.
-This solution was generated at Aura HackFest'23 Powered by GeeksForGeeks!
 
 ## Introduction
 
