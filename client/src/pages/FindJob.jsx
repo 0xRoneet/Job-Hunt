@@ -20,6 +20,25 @@ function FindJob() {
   const [filteredJobs, setFilteredJobs] = useState(jobData);
 
   const [searchField, setSearchField] = useState("");
+  // List of authorized email addresses that can add jobs
+  const authorizedEmails = ["roneet780@gmail.com", "recruiter@company.com"];
+
+  // Check if the current user is authorized to add jobs
+  const isAuthorized = () => {
+    if (!user) return false;
+
+    // Get email from the user object based on its structure
+    const userEmail = user.email || (user.providerData && user.providerData[0]?.email);
+    
+    // Log user info to diagnose profile picture issues
+    console.log("FindJob.jsx - User Object:", user);
+    if (user) {
+      console.log("FindJob.jsx - User Photo URL:", user.photoURL);
+    }
+
+    // Check if the email is in the authorized list
+    return userEmail && (authorizedEmails.includes(userEmail) || userEmail === "roneet780@gmail.com");
+  };
 
   const handleSearch = () => {
     // Redirect to /findjob with the searchField value as a query parameter
@@ -95,8 +114,7 @@ function FindJob() {
               onClick={handleRecentJobsClick}
             >
               Recent Jobs
-            </p>
-            <p
+            </p>            <p
               className={`px-4 py-2 rounded-xl cursor-pointer ${
                 isFeaturedJobs ? "bg-blue-500 text-white" : ""
               }`}
@@ -104,7 +122,7 @@ function FindJob() {
             >
               Featured Jobs
             </p>
-            {user && (
+            {user && isAuthorized() && (
               <p
                 className={`border px-4 py-2 rounded-xl cursor-pointer ${
                   isAddJobActive ? "bg-blue-500 text-white" : ""
@@ -172,9 +190,7 @@ function FindJob() {
       )}
       {isAddJobActive ? (
         <div>
-          <p className="text-center text-xl md:text-[2rem] font-semibold mt-16">
-            
-          </p>
+          <p className="text-center text-xl md:text-[2rem] font-semibold mt-16"></p>
           <AddJobForm />
         </div>
       ) : (

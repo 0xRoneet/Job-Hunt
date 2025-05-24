@@ -39,11 +39,14 @@ const NavBar = () => {
       navigate("/");
     }, 500);
   };
-
   // Check if user was logged in previously or not
   useEffect(() => {
     if (userInfo) {
       setIsLoggedIn(true);
+      
+      // Log user info for debugging
+      console.log("User logged in with:", userInfo);
+      console.log("Photo URL:", userInfo.photoURL);
     } else {
       setIsLoggedIn(false);
     }
@@ -139,14 +142,23 @@ const NavBar = () => {
                                         <span className="border-b-2 ease-in-out border-lightPrimary animate-border-animation"></span>
                                     )} */}
               </span>
-            </NavLink>
-
-                <Link>
+            </NavLink>                <Link>
                   <SignUp />
                 </Link>
               </>
            
           </ul>
+
+          {isLoggedIn && (
+            <div className="flex items-center">
+              <img
+                src={userInfo && userInfo.photoURL ? userInfo.photoURL : ProfileImage}
+                className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
+                alt="userprofile"
+                onClick={dropDownHandle}
+              />
+            </div>
+          )}
 
           <div className="relative">
             {isMenu && (
@@ -219,11 +231,10 @@ const NavBar = () => {
           </NavLink>
         </div>
 
-        <div className="relative z-50">
-          {isLoggedIn ? (
+        <div className="relative z-50">          {isLoggedIn ? (
             <img
               // whileTap={{ scale: 0.6 }}
-              src={ProfileImage}
+              src={userInfo && userInfo.photoURL ? userInfo.photoURL : ProfileImage}
               className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
               alt="userprofile"
               onClick={dropDownHandle}

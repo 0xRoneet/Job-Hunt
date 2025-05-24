@@ -1,24 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { auth, provider } from "./config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import Home from "./Home";
 import { motion } from "framer-motion";
 import { TbLogout } from "react-icons/tb";
 import { AiOutlinePlus } from "react-icons/ai";
 import Avatar from "../img/avatar.png";
 import { Link } from "react-router-dom";
+import { useStateValue } from "../context/StateProvider";
+import { actionType } from "../context/reducer";
 
 const LogIn = () => {
   const [value, setValue] = useState("");
   const [user, setUser] = useState(null);
   const [isMenu, setIsMenu] = useState(false);
-
-  const login = async () => {
+  const [, dispatch] = useStateValue();  const login = async () => {
     if (!user) {
       try {
         const result = await signInWithPopup(auth, provider);
-        setUser(result.user);
-        localStorage.setItem("user", JSON.stringify(result.user));
+        // Make sure we store the full user object with photoURL
+        const userData = {
+          ...result.user,
+          photoURL: result.user.photoURL || null,
+        };
+        setUser(userData);
+        
+        // Update global state
+        dispatch({
+          type: actionType.SET_USER,
+          user: userData,
+        });
+        
+        localStorage.setItem("user", JSON.stringify(userData));
+        // Force reload to update auth state across the app
+        window.location.reload();
       } catch (error) {
         console.error(error);
       }
@@ -26,20 +41,34 @@ const LogIn = () => {
       setIsMenu(!isMenu);
     }
   };
-
   const logout = () => {
     setIsMenu(false);
     localStorage.clear();
     setUser(null);
+    
+    // Clear user from global state
+    dispatch({
+      type: actionType.SET_USER,
+      user: null,
+    });
+    
+    // Reload the page to update UI
+    window.location.reload();
   };
-
   useEffect(() => {
     setValue(localStorage.getItem("email"));
     const userFromLocalStorage = localStorage.getItem("user");
     if (userFromLocalStorage) {
-      setUser(JSON.parse(userFromLocalStorage));
+      const parsedUser = JSON.parse(userFromLocalStorage);
+      setUser(parsedUser);
+      
+      // Also update global state
+      dispatch({
+        type: actionType.SET_USER,
+        user: parsedUser,
+      });
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
@@ -47,10 +76,9 @@ const LogIn = () => {
         <Home />
       ) : (
         <div className="relative flex items-center gap">
-          <div className="relative">
-            <motion.img
+          <div className="relative">            <motion.img
               whileTap={{ scale: 0.6 }}
-              src={user ? user.photoURL : Avatar}
+              src={user && user.photoURL ? user.photoURL : Avatar}
               className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
               alt="userprofile"
               onClick={login}

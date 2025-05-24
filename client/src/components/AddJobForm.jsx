@@ -21,10 +21,25 @@ const AddJobForm = () => {
   const [imageAsset, setImageAsset] = useState(null);
   const [fields, setFields] = useState(false);
   const [alertStatus, setAlertStatus] = useState("danger");
-  const [msg, setMsg] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [msg, setMsg] = useState(null);  const [isLoading, setIsLoading] = useState(false);
   const [{ jobData }, dispatch] = useStateValue();
   const [{ user }] = useStateValue();
+    // List of authorized email addresses that can add jobs
+  const authorizedEmails = ['roneet780@gmail.com', 'recruiter@company.com'];
+    // Check if the current user is authorized
+  const isAuthorized = () => {
+    // No user is logged in
+    if (!user) return false;
+    
+    // Get email from the user object based on its structure
+    const userEmail = user.email || (user.providerData && user.providerData[0]?.email);
+    
+    // Check if the email is in the authorized list
+    return userEmail && (
+      authorizedEmails.includes(userEmail) || 
+      userEmail === "roneet780@gmail.com"
+    );
+  };
 
   const handleFeatureTrue = () => {
     setFeatured(true);
@@ -33,7 +48,6 @@ const AddJobForm = () => {
   const handleFeatureFalse = () => {
     setFeatured(false);
   };
-
   const uploadImage = (e) => {
     setIsLoading(true);
     const imageFile = e.target.files[0];
@@ -43,8 +57,10 @@ const AddJobForm = () => {
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        const uploadProgress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        // Calculate upload progress but we're not displaying it in the UI
+        // Could be used later for progress indicators
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload progress: ${progress}%`);
       },
       (error) => {
         console.log(error);
@@ -149,11 +165,10 @@ const AddJobForm = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-8 items-center justify-center">
-      <div className=" mt-16">
+    <div className="w-full flex flex-col gap-8 items-center justify-center">      <div className=" mt-16">
         <p className="text-2xl font-medium text-center">Add a Job</p>
       </div>
-      {user ? (
+      {user && isAuthorized() ? (
         <div className="w-[90%] md:w-[50%] border border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center gap-4">
           {fields && (
             <p
@@ -191,10 +206,9 @@ const AddJobForm = () => {
                   </>
                 ) : (
                   <>
-                    <div className="relative h-full">
-                      <img
+                    <div className="relative h-full">                      <img
                         src={imageAsset}
-                        alt="uploaded image"
+                        alt="uploaded job image"
                         className="w-full h-full object-cover"
                       />
                       <button
@@ -288,10 +302,20 @@ const AddJobForm = () => {
             >
               Save
             </button>
-          </div>
+          </div>        </div>
+      ) : (        <div className="text-center py-6">
+          <p className="text-red-500 font-semibold mb-2">You don't have rights to add jobs</p>
+          <p className="text-gray-600 mb-4">Only specific authorized users can add job listings</p>          {user ? (
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
+              <p className="text-yellow-800 text-sm mb-2">Your current account: {user.email || (user.providerData && user.providerData[0]?.email) || "Unknown email"}</p>
+              <p className="text-gray-600 text-xs">This email address is not authorized to add job listings.</p>
+            </div>
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 p-4 rounded-md">
+              <p className="text-blue-800">Please login to continue</p>
+            </div>
+          )}
         </div>
-      ) : (
-        <p>You don't have rights</p>
       )}
     </div>
   );
