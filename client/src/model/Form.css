@@ -99,5 +99,82 @@ transition: background-color 0.3s ease, box-shadow 0.3s ease;
 
 .button:hover {
 background-color: rgb(20, 30, 210);
-box-shadow: 0 0 10px 0 rgba(1, 1, 1, 1);
+box-shadow: 0 0 10px 0 rgba(1, 1, 1, 1);
+}
+
+/* Result container styling */
+.result-container {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.success-result {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.warning-result {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+}
+
+.error-result {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.result-container h3 {
+  margin-top: 0;
+  font-size: 1.4em;
+}
+
+.result-container h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  color: #495057;
+}
+
+.result-container h5 {
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-size: 1.1em;
+  color: #6c757d;
+}
+
+.result-container ul {
+  padding-left: 20px;
+}
+
+.result-container li {
+  margin-bottom: 5px;
+}
+
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (min-width: 768px) {
+  .skills-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .skills-container > div {
+    flex: 1;
+    min-width: 250px;
+  }
 }

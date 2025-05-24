@@ -11,8 +11,7 @@ const PredictionForm = () => {
     Certification: 4,
     HistoryOfBacklogs: 1,
   });
-
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,16 +50,14 @@ const PredictionForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
+    e.preventDefault();    try {
       const response = await axios.post(
-        'https://588d-45-115-54-83.ngrok.io/placement_prediction',
+        'https://8778-182-48-212-244.ngrok-free.app/placement_prediction',
         formData
       );
 
       console.log('Prediction Result:', response.data);
-      setResult(response.data) // Fixed the typo here
+      setResult(response.data)
     } catch (error) {
       console.error('Error making prediction:', error);
     }
@@ -164,9 +161,139 @@ const PredictionForm = () => {
             </label>
           </div>
           <button className="button" type="submit">Submit</button>
-        </form>
-      </div>
-      <h2 className='tag' > Result: {result} </h2>
+        </form>      </div>
+        {result && (
+        <div className="result-container">
+          <h2 className='tag'>Prediction Result:</h2>
+          
+          {result.status === "success" ? (
+            <div className={result.placed ? "success-result" : "warning-result"}>
+              <h3>{result.plainMessage || result.message}</h3>
+                {result.placed ? (
+                <div>
+                  {result.strengths && result.strengths.length > 0 && (
+                    <>
+                      <h4>Your Strengths:</h4>
+                      <ul>
+                        {result.strengths.map((strength, index) => (
+                          <li key={index}>{strength}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  
+                  {result.next_steps && result.next_steps.length > 0 && (
+                    <>
+                      <h4>Next Steps:</h4>
+                      <ul>
+                        {result.next_steps.map((step, index) => (
+                          <li key={index}>{step}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  
+                  {result.trending_skills && (
+                    <>
+                      <h4>Trending Skills:</h4>
+                      <div className="skills-container">
+                        {result.trending_skills.tech && (
+                          <div>
+                            <h5>Technical Skills:</h5>
+                            <ul>
+                              {result.trending_skills.tech.map((skill, index) => (
+                                <li key={index}>{skill}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {result.trending_skills.soft_skills && (
+                          <div>
+                            <h5>Soft Skills:</h5>
+                            <ul>
+                              {result.trending_skills.soft_skills.map((skill, index) => (
+                                <li key={index}>{skill}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {result.areas_to_improve && result.areas_to_improve.length > 0 && (
+                    <>
+                      <h4>Areas to Improve:</h4>
+                      <ul>
+                        {result.areas_to_improve.map((area, index) => (
+                          <li key={index}>{area}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  
+                  {result.recommendations && result.recommendations.length > 0 && (
+                    <>
+                      <h4>Recommendations:</h4>
+                      <ul>
+                        {result.recommendations.map((rec, index) => (
+                          <li key={index}>{rec}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  
+                  {result.trending_skills_to_learn && (
+                    <>
+                      <h4>Skills to Learn:</h4>
+                      <div className="skills-container">
+                        {result.trending_skills_to_learn.tech && (
+                          <div>
+                            <h5>Technical Skills:</h5>
+                            <ul>
+                              {result.trending_skills_to_learn.tech.map((skill, index) => (
+                                <li key={index}>{skill}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {result.trending_skills_to_learn.courses && (
+                          <div>
+                            <h5>Recommended Courses:</h5>
+                            <ul>
+                              {result.trending_skills_to_learn.courses.map((course, index) => (
+                                <li key={index}>{course}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {result.trending_skills_to_learn.resources && (
+                          <div>
+                            <h5>Helpful Resources:</h5>
+                            <ul>
+                              {result.trending_skills_to_learn.resources.map((resource, index) => (
+                                <li key={index}>{resource}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (            <div className="error-result">
+              <p>{result.plainMessage || result.error || "An error occurred during prediction."}</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
